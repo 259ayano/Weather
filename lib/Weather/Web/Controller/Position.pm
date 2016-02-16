@@ -31,7 +31,7 @@ Catalyst Controller.
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 	my $params = expand_hash($c->req->params);
-	my $hint = $params->{search}{hint} || '髱吝ｲ｡';
+	my $hint = $params->{search}{hint} || '静岡';
 	my $position = $params->{p};
 
 	my $url = "http://www.yr.no/soek/soek.aspx?sted=$hint";

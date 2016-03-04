@@ -111,6 +111,8 @@ sub detail :Local {
 
 	}
 
+	my $ontime = [grep { $_->{hour} == $hour if $_->{hour}} @$list];
+    $c->stash->{ontime} = $ontime->[0]->{hour};
     $c->stash->{th} = $key;
     $c->stash->{show} = $show;
     $c->stash->{template} = 'tornado-detail.tt';

@@ -10,17 +10,45 @@ tablesorter = [[0,0]]
 <table class="sort" id="list">
   <thead class="header">
 	<tr>
-	  [%- FOREACH t = th %]
-	  <th nowrap>[% t %]</th>
-	  [%- END %]
+	  <th nowrap>hour</th>
+	  <th nowrap>kiatsu1</th>
+	  <th nowrap>kiatsu2</th>
+	  <th nowrap>rain</th>
+	  <th nowrap>temp</th>
+	  <th nowrap>roten</th>
+	  <th nowrap>jyoki</th>
+	  <th nowrap>wet</th>
+	  <th nowrap>wind</th>
+	  <th nowrap>wind_dir</th>
+	  <th nowrap>sun1</th>
+	  <th nowrap>sun2</th>
+	  <th nowrap>snow1</th>
+	  <th nowrap>snow2</th>
+	  <th nowrap>tenki</th>
+	  <th nowrap>cloud</th>
+	  <th nowrap>see</th>
 	</tr>
   </thead>
   <tbody>
 	[%- FOREACH r = b.value %]
-	<tr>
-	  [%- FOREACH t = th %]
-	  <td class="center" nowrap>[% r.$t %]</td>
-	  [%- END %]
+	<tr [% IF ontime == r.hour %] style="background-color:blue; color:white; font-weight:bold;" [% END %]>
+	  <td class="center" nowrap>[% r.hour %]</td>
+	  <td class="center" nowrap>[% r.kiatsu1 %]</td>
+	  <td class="center" nowrap>[% r.kiatsu2 %]</td>
+	  <td class="center" nowrap>[% r.rain %]</td>
+	  <td class="center" nowrap>[% r.temp %]</td>
+	  <td class="center" nowrap>[% r.roten %]</td>
+	  <td class="center" nowrap>[% r.jyoki %]</td>
+	  <td class="center" nowrap>[% r.wet %]</td>
+	  <td class="center" nowrap>[% r.wind %]</td>
+	  <td class="center" nowrap>[% r.wind_dir %]</td>
+	  <td class="center" nowrap>[% r.sun1 %]</td>
+	  <td class="center" nowrap>[% r.sun2 %]</td>
+	  <td class="center" nowrap>[% r.snow1 %]</td>
+	  <td class="center" nowrap>[% r.snow2 %]</td>
+	  <td class="center" nowrap>[% r.tenki %]</td>
+	  <td class="center" nowrap>[% r.cloud %]</td>
+	  <td class="center" nowrap>[% r.see %]</td>
 	</tr>
 	[%- END %]
   </tbody>

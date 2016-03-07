@@ -1,3 +1,4 @@
+#! -*- mode: perl; coding: utf-8; -*-
 package Weather::CSV;
 use Moose;
 use namespace::autoclean;
@@ -5,6 +6,7 @@ use Catalyst::Runtime 5.80;
 use Data::Dumper;
 use FindBin;
 use base qw/DBIx::Simple/;
+use utf8;
 
 sub connect {
     my $class = shift;
@@ -26,6 +28,20 @@ sub connect {
 sub tornado {
     my ($self, $where) = @_;
     my @hashes = $self->select('tornado','*',$where)->hashes;
+    my @result = map { my $row = $_; $row } @hashes;
+    wantarray ? @result : \@result;
+}
+
+sub prec {
+    my ($self, $where) = @_;
+    my @hashes = $self->select('prec','*',$where)->hashes;
+    my @result = map { my $row = $_; $row } @hashes;
+    wantarray ? @result : \@result;
+}
+
+sub block {
+    my ($self, $where) = @_;
+    my @hashes = $self->select('block','*',$where)->hashes;
     my @result = map { my $row = $_; $row } @hashes;
     wantarray ? @result : \@result;
 }

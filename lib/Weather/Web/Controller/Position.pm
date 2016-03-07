@@ -1,3 +1,4 @@
+#! -*- mode: perl; coding: utf-8; -*-
 package Weather::Web::Controller::Position;
 use Moose;
 use namespace::autoclean;
@@ -6,6 +7,7 @@ use Data::Dumper;
 use LWP::UserAgent;
 use HTML::TreeBuilder;
 use List::MoreUtils qw/uniq/;
+use utf8;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -29,7 +31,7 @@ Catalyst Controller.
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 	my $params = expand_hash($c->req->params);
-	my $hint = $params->{search}{hint} || '静岡';
+	my $hint = $params->{search}{hint} || '髱吝ｲ｡';
 	my $position = $params->{p};
 
 	my $url = "http://www.yr.no/soek/soek.aspx?sted=$hint";

@@ -1,3 +1,4 @@
+#! -*- mode: perl; coding: utf-8; -*-
 package Weather::Web::Controller::Tornado;
 use Moose;
 use namespace::autoclean;
@@ -5,6 +6,7 @@ use CGI::Expand qw/expand_hash/;
 use Data::Dumper;
 use Weather::CSV;
 use Encode;
+use utf8;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -13,7 +15,7 @@ sub index :Path :Args(0) {
     my $csv = Weather::CSV->connect;
     my $params = expand_hash($c->req->params);
     my $search = $params->{search};
-    my $h = decode('utf-8',$search->{hint});
+    my $h = $search->{hint};
     my $d = $search->{date} || '';
 
     my @where = (
@@ -72,12 +74,12 @@ sub detail :Local {
     my @prec   = $c->pdata($p);
 	for (@prec) {
 		chomp;
-		my ($p_name, $p_code) = split "," , $_;
+		my ($p_name, $p_code) = ($_->{name}, $_->{code});
 		my @block = $c->bdata($p_code,$b);
 
 		for (@block) {
 			chomp;
-			my ($b_name, $p_code, $b_code) = split "," , $_;
+			my ($b_name, $p_code, $b_code) = ($_->{name},$_->{pcode},$_->{code});
 
 			# 気象庁のサイトにアクセスしてコンテンツを取得
 

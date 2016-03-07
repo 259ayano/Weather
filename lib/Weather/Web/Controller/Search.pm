@@ -1,7 +1,9 @@
+#! -*- mode: perl; coding: utf-8; -*-
 package Weather::Web::Controller::Search;
 use Moose;
 use namespace::autoclean;
 use Data::Dumper;
+use utf8;
 
 BEGIN { extends 'Catalyst::Controller'; }
 

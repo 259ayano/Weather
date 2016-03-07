@@ -1,9 +1,13 @@
+#! -*- mode: perl; coding: utf-8; -*-
 package Weather::Web;
 use Moose;
 use namespace::autoclean;
 use Data::Dumper;
-
+use utf8;
 use Catalyst::Runtime 5.80;
+use LWP::UserAgent;
+use Encode;
+use Weather::CSV;
 
 # Set flags and add plugins for the application.
 #
@@ -20,6 +24,7 @@ use Catalyst::Runtime 5.80;
 use Catalyst qw/
     -Debug
     ConfigLoader
+    Unicode::Encoding
     Static::Simple
 /;
 
@@ -64,20 +69,35 @@ my $prec_tbl  = "tsv/prec";
 
 sub pdata {
 	my ($class,$p) = @_;
-    my @prec  = `grep -e $p $prec_tbl`;
+    my $csv = Weather::CSV->connect;
+    my @where = (
+		{'name' => { like => "%$p%" }},
+		{'code' => { like => "%$p%" }},
+		);
+    my @prec = $csv->prec(\@where);
+#   my @prec  = `grep -e $p $prec_tbl`;
 	@prec;
 }
 
 sub bdata {
-	my ($class,$prec_code,$b) = @_;
-	my @block;
-	if ($b ne ''){
-		my @b1   = `grep -e ',$prec_code,$b' $block_tbl`;
-		my @b2   = `grep -e '$b,$prec_code,' $block_tbl`;
-		@block = (@b1,@b2);
-	} else {
-		@block   = `grep -e ',$prec_code,' $block_tbl`;
-	}
+	my ($class,$p_code,$b) = @_;
+    my $csv = Weather::CSV->connect;
+    my @where = (
+		{'name' => { like => "%$b%" }, 'pcode' => { like => "%$p_code%" }},
+		{'code' => { like => "%$b%" }, 'pcode' => { like => "%$p_code%" }},
+		);
+    my @block = $csv->block(\@where);
+
+#	my @block;
+#	if ($b ne ''){
+#		my @b1   = `grep -e ',$prec_code,$b' $block_tbl`;
+#		my @b2   = `grep -e '$b,$prec_code,' $block_tbl`;
+#		@block = (@b1,@b2);
+#	} else {
+#		@block   = `grep -e ',$prec_code,' $block_tbl`;
+#	}
+#	map { decode('utf8', $_) } @block;
+
 	@block;
 }
 
@@ -104,7 +124,7 @@ sub getjma {
 
 	my $ua  = LWP::UserAgent->new;
 	my $res = $ua->get($url . join('&', map { "$_=$param{$_}" } keys %param));
-	my $con = $res->content;
+	my $con = $res->decoded_content;
 	$con;
 }
 =encoding utf8

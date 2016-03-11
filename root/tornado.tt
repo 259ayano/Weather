@@ -43,7 +43,7 @@ function drawRegionsMap() {
 </script>
 <form method="post" action="[% c.uri_for(c.action) %]">
   <div style="padding: 3px;">Search:
-    <input type="text" name="search.hint" autofocus="autofocus" id="hint" value="[% search.hint %]" style="width: 150px;">
+    <input type="text" name="search.hint" autofocus="autofocus" id="hint" value="[% search.hint %]" style="width: 200px;" placeholder="type date fscale...">
     Date: <input type="text" name="search.date" id="date" size="14" value="[% search.date %]" style="width: 80px; ime-mode: disabled;">
     <button type="submit" name="submit" value="yes" class="blue">Search</button>
     <button type="submit" name="csv" value="yes" class="green">CSV</button>

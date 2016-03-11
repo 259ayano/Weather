@@ -70,9 +70,8 @@
 
   [%- menu = [
   { path => 'tornado', name => 'Tornado', namespace => 'tornado' },
-  { path => 'data', name => 'Data', namespace => 'data' },
-  { path => 'position', name => 'Position', namespace => 'position' },
-  { path => 'map', name => 'Map', namespace => 'map' },
+  { path => 'data', name => 'Weather history', namespace => 'data' },
+#  { path => 'position', name => 'Position', namespace => 'position' },
   ]
   -%]
 

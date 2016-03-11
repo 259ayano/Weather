@@ -32,7 +32,7 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     my $param = expand_hash($c->req->params);
     my $search = $param->{search};
-    my $p = $search->{prec}  || '50'; 
+    my $p = $search->{prec}  || '静岡'; 
     my $b = $search->{block}; 
     my $y = $search->{year} || '2016';
     my $m = $search->{month} || '';

@@ -43,16 +43,31 @@ function drawRegionsMap() {
 </script>
 <form method="post" action="[% c.uri_for(c.action) %]">
   <div style="padding: 3px;">Search:
-	<input type="text" name="search.hint" autofocus="autofocus" id="hint" value="[% search.hint %]" style="width: 150px;">
-	Date: <input type="text" name="search.date" id="date" size="14" value="[% search.date %]" style="width: 80px; ime-mode: disabled;">
-	<button type="submit" name="submit" value="yes" class="blue">Search</button>
-	<button type="submit" name="csv" value="yes" class="green">CSV</button>
+    <input type="text" name="search.hint" autofocus="autofocus" id="hint" value="[% search.hint %]" style="width: 150px;">
+    Date: <input type="text" name="search.date" id="date" size="14" value="[% search.date %]" style="width: 80px; ime-mode: disabled;">
+    <button type="submit" name="submit" value="yes" class="blue">Search</button>
+    <button type="submit" name="csv" value="yes" class="green">CSV</button>
   </div>
-
+  <div style="padding: 3px; margin:5px;"></div>
+    <div style="float:left; width:250px; height:500px; overflow:auto;">
+      <table>
+	<tr>
+	  <th nowrap width="50px">#</th>
+	  <th nowrap width="100px">prec</th>
+	  <th nowrap width="100px">count</th>
+	</tr>
+      [%- FOREACH m = map %]
+	<tr>
+	  <td nowrap>[% loop.count %]</td>
+	  <td nowrap>[% m.0 %]</td>
+	  <td nowrap>[% m.1 %]</td>
+	</tr>
+      [%- END %]
+      </table> 
+    </div>
+    <div id="regions_div" style="width: 700px; height: 500px; float:right;"></div>
+  </div>
 </form>
-
-<div id="regions_div" style="width: 600px; height: 400px"></div>
-
 <table class="sort" id="list">
   <thead class="header">
 	<tr>

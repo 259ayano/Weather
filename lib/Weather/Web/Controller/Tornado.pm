@@ -20,25 +20,25 @@ sub index :Path :Args(0) {
 
     my @where = (
 	{ $h ? ('type' => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "$d%"  }) : ()},
+	  $d ? ('date' => { like => "%$d%"  }) : ()},
 	{ $h ? ('position' => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('fscale'  => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('damage1' => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('damage2' => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('dead'    => $h) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('hurt1'   => $h) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('alldestroy' => $h) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('halfdestroy' => $h) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('detail'  => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "$d%" }) : ()},
+	  $d ? ('date' => { like => "%$d%" }) : ()},
 	);
 
     my @tornado = $csv->tornado(\@where);
@@ -74,7 +74,6 @@ sub index :Path :Args(0) {
     $c->stash->{list} = \@tornado;
     $c->stash->{template} = 'tornado.tt';
 }
-
 
 sub detail :Local {
     my ( $self, $c ) = @_;
@@ -140,6 +139,91 @@ sub detail :Local {
     $c->stash->{th} = $key;
     $c->stash->{show} = $show;
     $c->stash->{template} = 'tornado-detail.tt';
+}
+
+
+sub data :Local {
+    my ( $self, $c ) = @_;
+    my $param = expand_hash($c->req->params);
+    my $search = $param->{search};
+    my $p = $search->{prec}  || '静岡'; 
+    my $b = $search->{block}; 
+    my $y = $search->{year} || '2016';
+    my $m = $search->{month} || '';
+    my $d = $search->{day} || '';
+	my ($type,$key) = $c->gettype($y,$m,$d);
+
+    my ($show,$list);
+    my @prec   = $c->pdata($p);
+	for (@prec) {
+		chomp;
+		my ($p_name, $p_code) = ($_->{name}, $_->{code});
+		my @block = $c->bdata($p_code,$b);
+
+		for (@block) {
+			chomp;
+			my ($b_name, $p_code, $b_code) = ($_->{name},$_->{pcode},$_->{code});
+
+			# 気象庁のサイトにアクセスしてコンテンツを取得
+
+			my $con = $c->getjma($p_code,$b_code,$y,$m,$d,$type);
+			
+			# HTML::TreeBuilderで解析する
+
+			my $tree = HTML::TreeBuilder->new;
+			$tree->parse($con);
+
+			# データの部分を抽出する
+
+			my $title;
+			my @h3 = $tree->find('h3');
+			next unless @h3;
+			push @$title, $_->as_text for @h3;
+
+			for my $tr ($tree->look_down('id','tablefix1')->find('tr')) {
+				my $line;
+				my $count = 0;
+				$line->{prec}  = $p_code;
+				$line->{block} = $b_code;
+				for ($tr->find('td')){
+					$line->{$key->[$count]} = $_->as_text;
+					$count++;
+				}
+				push @$list, $line;
+				push @{$show->{"$p_code:$p_name"}->{"$b_code:$b_name"}}, $line;
+			}
+		}
+	}
+
+    if($param->{csv}){
+	my $file = 'tenki.csv';
+	my $data = &list2csv($list,$key);
+	$c->stash(data => $data, current_view => 'CSV', filename => $file);
+	return;
+    }
+    
+    my $year_list  = ['',1872..2016];
+    my $month_list = ['',1..12];
+    my $day_list   = ['',1..31];
+    $c->stash->{year_list}  = $year_list;
+    $c->stash->{month_list} = $month_list;
+    $c->stash->{day_list}   = $day_list;
+    $c->stash->{th} = $key;
+    $c->stash->{show} = $show;
+    $c->stash->{search} = $search;
+    $c->stash->{template} = 'data.tt';
+}
+
+
+sub list2csv {
+    my $list = $_[0];
+    my $title = $_[1];
+    my $csv = [
+	[ map { $_ } @$title ],
+	map { my $x = $_; [ map { $x->{$_} } @$title ]; } @$list
+	];
+#	Data::Recursive::Encode->encode('utf-8', $csv);
+    $csv;
 }
 
 __PACKAGE__->meta->make_immutable;

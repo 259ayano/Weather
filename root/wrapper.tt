@@ -68,11 +68,17 @@
 
   </head>
 
-  [%- menu = [
-  { path => 'tornado', name => 'Tornado', namespace => 'tornado' },
-  { path => 'data', name => 'Weather history', namespace => 'data' },
-#  { path => 'position', name => 'Position', namespace => 'position' },
-  ]
+  [%-
+   menu = [
+	{ path => 'tornado', name => 'Tornado', namespace => 'tornado'},
+	#  { path => 'data', name => 'machikoba', namespace => 'machi' },
+	#  { path => 'position', name => 'Position', namespace => 'position' },
+  ];
+    tornado => [
+	       { path => '',     name => '竜巻' },
+	       { path => 'data', name => '天気のデータ' },
+	       ];
+
   -%]
 
 <!--  <body onload="initialize()" onunload="GUnload()"> -->
@@ -88,10 +94,17 @@
 	  [%- END %]
 	  [%- END %]
 	</div>
-
 	<div class="content">
+	  [%- IF ${c.namespace}.size %]
+	  <div class="tabnav">
+		<ul class="tabnav-tabs">
+		  [%- FOREACH m = ${c.namespace} %]
+		  <li><a class="tabnav-tab [% c.req.path_info.split('/').last == m.path || (c.action.name == 'index' && m.path == '') ? 'selected' : '' %]" href="[% c.uri_for(m.path) %]">[% m.name %][%- IF m.path == 'request' %]<div id="exist" style="[% circle %]"></div>[%- END %]</a></li>
+		  [%- END %]
+		</ul>
+	  </div>
+	  [%- END %]
 	  [% content %]
 	</div>
-
   </body>
 </html>

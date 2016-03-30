@@ -8,6 +8,7 @@ use Weather::CSV;
 use Encode;
 use utf8;
 use HTML::TreeBuilder;
+use List::MoreUtils;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -26,51 +27,43 @@ sub index :Path :Args(0) {
 	  $d ? ('date' => { like => "%$d%" }) : ()},
 	{ $h ? ('fscale'  => { like => "%$h%" }) : (),
 	  $d ? ('date' => { like => "%$d%" }) : ()},
-	{ $h ? ('damage1' => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "%$d%" }) : ()},
-	{ $h ? ('damage2' => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "%$d%" }) : ()},
-	{ $h ? ('dead'    => $h) : (),
-	  $d ? ('date' => { like => "%$d%" }) : ()},
-	{ $h ? ('hurt1'   => $h) : (),
-	  $d ? ('date' => { like => "%$d%" }) : ()},
-	{ $h ? ('alldestroy' => $h) : (),
-	  $d ? ('date' => { like => "%$d%" }) : ()},
-	{ $h ? ('halfdestroy' => $h) : (),
-	  $d ? ('date' => { like => "%$d%" }) : ()},
-	{ $h ? ('detail'  => { like => "%$h%" }) : (),
-	  $d ? ('date' => { like => "%$d%" }) : ()},
 	);
+	my $order = [ +{ -asc => [qw/date/] } ];
+    my @tornado = $csv->tornado(\@where,$order);
 
-    my @tornado = $csv->tornado(\@where);
-
-    my $mapdata;
+    my $mapd;
     for (@tornado){
-	my ($p,$b) = split(" ",$_->{position});
-	if ($p =~ /北海道.*/){
-	    $p = "北海道";
-	} elsif($p =~ /東京都.*/) {
-	    $p = "東京";
-	} elsif($p =~ /京都府.*/) {
-	    $p = "京都";
-	} elsif($p =~ /大阪府.*/) {
-	    $p = "大阪";
-	} else {
-	    $p =~ s/(^.+)県$/$1/g;
-	}
-	push( @{$mapdata->{$p}}, $_ ); 
+		my ($p,$b) = split(" ",$_->{position});
+		if ($p =~ /北海道.*/){
+			$p = "北海道";
+		} elsif($p =~ /東京都.*/) {
+			$p = "東京";
+		} elsif($p =~ /京都府.*/) {
+			$p = "京都";
+		} elsif($p =~ /大阪府.*/) {
+			$p = "大阪";
+		} else {
+			$p =~ s/(^.+)県$/$1/g;
+		}
+		push( @{$mapd->{$p}}, $_ ); 
     }
     my $map;
-    for (keys %$mapdata){
-	push (@$map, [ $_, $#{$mapdata->{$_}} + 1 ]);
+    for  (keys %$mapd){
+		my $where = [ { name => { like => "%$_%" }} ];
+		my @prec = $csv->prec($where,$order);
+		my $fday = $mapd->{$_}[0]{date} =~ /.+\s.+/ ? (split(" ", $mapd->{$_}[0]{date}))[0] : $mapd->{$_}[0]{date};
+		my $lday = $mapd->{$_}[-1]{date} =~ /.+\s.+/ ? (split(" ", $mapd->{$_}[-1]{date}))[0] : $mapd->{$_}[-1]{date};		
+		my @type   = List::MoreUtils::uniq map { $_->{type} } @{$mapd->{$_}};
+		my @fscale = List::MoreUtils::uniq map { $_->{fscale} } @{$mapd->{$_}};
+		
+		my $code = $prec[0]{code} || 0;
+		my $date   = "$fday~$lday";
+		my $type   = join(",", @type);
+		my $fscale = join(",", @fscale);
+		my $count = $#{$mapd->{$_}} + 1;
+		push (@$map, [ $code, $_, $date, $type, $fscale, $count  ]);
     } 
-    my $year_list  = ['',1950..2016];
-    my $month_list = ['',1..12];
-    my $day_list   = ['',1..31];
-    $c->stash->{map} = $map;
-    $c->stash->{year_list}  = $year_list;
-    $c->stash->{month_list} = $month_list;
-    $c->stash->{day_list}   = $day_list;
+    $c->stash->{map} = [ sort { $a->[0] <=> $b->[0]} @$map ];
     $c->stash->{search} = $params->{search};
     $c->stash->{list} = \@tornado;
     $c->stash->{template} = 'tornado.tt';
@@ -108,36 +101,9 @@ sub condition :Local {
 	{ $h ? ('detail'  => { like => "%$h%" }) : (),
 	  $d ? ('date' => { like => "%$d%" }) : ()},
 	);
+	my $order = [ +{ -desc => [qw/date/] } ];
+    my @tornado = $csv->tornado(\@where,$order);
 
-    my @tornado = $csv->tornado(\@where);
-
-    my $mapdata;
-    for (@tornado){
-	my ($p,$b) = split(" ",$_->{position});
-	if ($p =~ /北海道.*/){
-	    $p = "北海道";
-	} elsif($p =~ /東京都.*/) {
-	    $p = "東京";
-	} elsif($p =~ /京都府.*/) {
-	    $p = "京都";
-	} elsif($p =~ /大阪府.*/) {
-	    $p = "大阪";
-	} else {
-	    $p =~ s/(^.+)県$/$1/g;
-	}
-	push( @{$mapdata->{$p}}, $_ ); 
-    }
-    my $map;
-    for (keys %$mapdata){
-	push (@$map, [ $_, $#{$mapdata->{$_}} + 1 ]);
-    } 
-    my $year_list  = ['',1950..2016];
-    my $month_list = ['',1..12];
-    my $day_list   = ['',1..31];
-    $c->stash->{map} = $map;
-    $c->stash->{year_list}  = $year_list;
-    $c->stash->{month_list} = $month_list;
-    $c->stash->{day_list}   = $day_list;
     $c->stash->{search} = $params->{search};
     $c->stash->{list} = \@tornado;
     $c->stash->{template} = 'condition.tt';
@@ -206,6 +172,7 @@ sub detail :Local {
     $c->stash->{ontime} = $ontime->[0]->{hour};
     $c->stash->{th} = $key;
     $c->stash->{show} = $show;
+	warn Dumper $show;
     $c->stash->{template} = 'condition-d.tt';
 }
 

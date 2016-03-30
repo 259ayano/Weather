@@ -13,7 +13,7 @@
 	<link rel="stylesheet" type="text/css" media="screen" href="[% c.uri_for('/static/js/fancybox/jquery.fancybox.css') %]">
 
 	<!-- jquery -->
-	<script type="text/javascript" src="[% c.uri_for('/static/js/jquery-1.9.1.js') %]"></script>
+	<script type="text/javascript" src="[% c.uri_for('/static/js/jquery-1.8.3.js') %]"></script>
 	<script type="text/javascript" src="[% c.uri_for('/static/js/jquery-ui-1.9.2.custom.js') %]"></script>
 	<script type="text/javascript" src="[% c.uri_for('/static/js/linq.min.js') %]"></script>
 <!--	<script src="http://maps.google.com/maps?hl=en&file=api&v=2&key=ABQIAAAAUiSm4yE-UDgb8kviBG-3fxTET7FL1OGiEo0132Tsz7xytqsKmxTD2VNE7QBz0JNWWmZzj89DQ44VNA&sensor=false"
@@ -49,17 +49,6 @@
 
 	<!-- tablesorter -->
 	<script type="text/javascript" src="[% c.uri_for('/static/js/jquery.tablesorter.min.js') %]"></script>
-	<script type="text/javascript" id="js">
-	  $(document).ready(function() {
-	  $("table#datalist").tablesorter({
-	  widgets: ['zebra'],
-	  [%- IF tablesorter %]
-	  [%- USE JSON %]
-	  sortList: [% tablesorter.json %]
-	  [%- END %]
-	  });
-	  });
-	</script>
 
 	[%- IF highcharts -%]
 	<!-- highcharts -->

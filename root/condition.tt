@@ -1,6 +1,9 @@
-[% WRAPPER wrapper.tt
-tablesorter = [[0,0]]
-%]
+[% WRAPPER wrapper.tt %]
+<script type="text/javascript" id="js">
+$(document).ready(function() {
+	$("table#list").tablesorter();
+});
+</script>
 <script>
   $(function($){
 	  $(".fancybox").fancybox({
@@ -46,17 +49,17 @@ tablesorter = [[0,0]]
 	  <td class="center" nowrap>
 		<a class="fancybox" href="[% c.uri_for('/tornado/detail', { date => l.date, position => l.position }) %]">[% loop.count %]</a>
 	  </td>
-	  <td class="center" nowrap>[% l.type %]</td>
-	  <td class="center" nowrap>[% l.date %]</td>
-	  <td class="center" nowrap>[% l.position %]</td>
-	  <td class="center" nowrap>[% l.fscale %]</td>
-	  <td class="center" nowrap>[% l.damege1 %]</td>
-	  <td class="center" nowrap>[% l.damege2 %]</td>
-	  <td class="center" nowrap>[% l.dead %]</td>
-	  <td class="center" nowrap>[% l.hurt1 %]</td>
-	  <td class="center" nowrap>[% l.alldestroy %]</td>
-	  <td class="center" nowrap>[% l.halfdestroy %]</td>
-	  <td class="center" nowrap>[% l.detail %]</td>
+	  <td nowrap>[% l.type %]</td>
+	  <td nowrap>[% l.date %]</td>
+	  <td nowrap>[% l.position %]</td>
+	  <td nowrap>[% l.fscale %]</td>
+	  <td nowrap>[% l.damege1 %]</td>
+	  <td nowrap>[% l.damege2 %]</td>
+	  <td nowrap>[% l.dead %]</td>
+	  <td nowrap>[% l.hurt1 %]</td>
+	  <td nowrap>[% l.alldestroy %]</td>
+	  <td nowrap>[% l.halfdestroy %]</td>
+	  <td nowrap>[% l.detail %]</td>
 	</tr>
 	[%- END %]
   </tbody>

@@ -26,22 +26,22 @@ sub connect {
 }
 
 sub tornado {
-    my ($self, $where) = @_;
-    my @hashes = $self->select('tornado','*',$where)->hashes;
+    my ($self, $where,$order) = @_;
+    my @hashes = $self->select('tornado','*',$where,$order)->hashes;
     my @result = map { my $row = $_; $row } @hashes;
     wantarray ? @result : \@result;
 }
 
 sub prec {
-    my ($self, $where) = @_;
-    my @hashes = $self->select('prec','*',$where)->hashes;
+    my ($self, $where,$order) = @_;
+    my @hashes = $self->select('prec','*',$where,$order)->hashes;
     my @result = map { my $row = $_; $row } @hashes;
     wantarray ? @result : \@result;
 }
 
 sub block {
-    my ($self, $where) = @_;
-    my @hashes = $self->select('block','*',$where)->hashes;
+    my ($self, $where,$order) = @_;
+    my @hashes = $self->select('block','*',$where,$order)->hashes;
     my @result = map { my $row = $_; $row } @hashes;
     wantarray ? @result : \@result;
 }

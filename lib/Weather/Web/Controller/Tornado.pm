@@ -7,6 +7,7 @@ use Data::Dumper;
 use Weather::CSV;
 use Encode;
 use utf8;
+use HTML::TreeBuilder;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -75,6 +76,73 @@ sub index :Path :Args(0) {
     $c->stash->{template} = 'tornado.tt';
 }
 
+
+
+sub condition :Local {
+    my ( $self, $c ) = @_;
+    my $csv = Weather::CSV->connect;
+    my $params = expand_hash($c->req->params);
+    my $search = $params->{search};
+    my $h = $search->{hint};
+    my $d = $search->{date} || '';
+
+    my @where = (
+	{ $h ? ('type' => { like => "%$h%" }) : (),
+	  $d ? ('date' => { like => "%$d%"  }) : ()},
+	{ $h ? ('position' => { like => "%$h%" }) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	{ $h ? ('fscale'  => { like => "%$h%" }) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	{ $h ? ('damage1' => { like => "%$h%" }) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	{ $h ? ('damage2' => { like => "%$h%" }) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	{ $h ? ('dead'    => $h) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	{ $h ? ('hurt1'   => $h) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	{ $h ? ('alldestroy' => $h) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	{ $h ? ('halfdestroy' => $h) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	{ $h ? ('detail'  => { like => "%$h%" }) : (),
+	  $d ? ('date' => { like => "%$d%" }) : ()},
+	);
+
+    my @tornado = $csv->tornado(\@where);
+
+    my $mapdata;
+    for (@tornado){
+	my ($p,$b) = split(" ",$_->{position});
+	if ($p =~ /北海道.*/){
+	    $p = "北海道";
+	} elsif($p =~ /東京都.*/) {
+	    $p = "東京";
+	} elsif($p =~ /京都府.*/) {
+	    $p = "京都";
+	} elsif($p =~ /大阪府.*/) {
+	    $p = "大阪";
+	} else {
+	    $p =~ s/(^.+)県$/$1/g;
+	}
+	push( @{$mapdata->{$p}}, $_ ); 
+    }
+    my $map;
+    for (keys %$mapdata){
+	push (@$map, [ $_, $#{$mapdata->{$_}} + 1 ]);
+    } 
+    my $year_list  = ['',1950..2016];
+    my $month_list = ['',1..12];
+    my $day_list   = ['',1..31];
+    $c->stash->{map} = $map;
+    $c->stash->{year_list}  = $year_list;
+    $c->stash->{month_list} = $month_list;
+    $c->stash->{day_list}   = $day_list;
+    $c->stash->{search} = $params->{search};
+    $c->stash->{list} = \@tornado;
+    $c->stash->{template} = 'condition.tt';
+}
+
 sub detail :Local {
     my ( $self, $c ) = @_;
     my $params  = $c->req->params;
@@ -138,11 +206,11 @@ sub detail :Local {
     $c->stash->{ontime} = $ontime->[0]->{hour};
     $c->stash->{th} = $key;
     $c->stash->{show} = $show;
-    $c->stash->{template} = 'tornado-detail.tt';
+    $c->stash->{template} = 'condition-d.tt';
 }
 
 
-sub data :Local {
+sub info :Local {
     my ( $self, $c ) = @_;
     my $param = expand_hash($c->req->params);
     my $search = $param->{search};
@@ -211,9 +279,8 @@ sub data :Local {
     $c->stash->{th} = $key;
     $c->stash->{show} = $show;
     $c->stash->{search} = $search;
-    $c->stash->{template} = 'data.tt';
+    $c->stash->{template} = 'info.tt';
 }
-
 
 sub list2csv {
     my $list = $_[0];

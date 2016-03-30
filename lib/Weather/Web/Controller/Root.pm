@@ -34,7 +34,6 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
     # Hello World
-#    $c->stash->{template} = 'range.tt';
     $c->response->redirect($c->uri_for('/tornado'));
 }
 

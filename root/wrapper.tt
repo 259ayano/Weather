@@ -75,8 +75,9 @@
 	#  { path => 'position', name => 'Position', namespace => 'position' },
   ];
     tornado => [
-	       { path => '',     name => '竜巻' },
-	       { path => 'data', name => '天気のデータ' },
+	       { path => '',     name => 'Where' },
+	       { path => 'condition',     name => 'Condition' },
+	       { path => 'info', name => 'Info' },
 	       ];
 
   -%]

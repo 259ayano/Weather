@@ -60,7 +60,7 @@ function drawRegionsMap() {
 	  <table class="sort" id="list">
 		<thead class="header">
 		  <tr>
-			<th nowrap width="20px">#</th>
+			<th nowrap width="5px">#</th>
 			<th nowrap width="60px">position</th>
 			<th nowrap>date</th>
 			<th nowrap>type</th>

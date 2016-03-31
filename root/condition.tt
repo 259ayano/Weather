@@ -1,7 +1,10 @@
 [% WRAPPER wrapper.tt %]
 <script type="text/javascript" id="js">
 $(document).ready(function() {
-	$("table#list").tablesorter();
+	$("table#list").tablesorter({
+		widgets: ['zebra'],
+		tabIndex: false,
+	});
 });
 </script>
 <script>

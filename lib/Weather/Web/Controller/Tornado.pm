@@ -56,7 +56,7 @@ sub index :Path :Args(0) {
 		my @type   = List::MoreUtils::uniq map { $_->{type} } @{$mapd->{$_}};
 		my @fscale = List::MoreUtils::uniq map { $_->{fscale} } @{$mapd->{$_}};
 		
-		my $code = $prec[0]{code} || 0;
+		my $code = $_ eq "北海道" ? 0 : $prec[0]{code} ? $prec[0]{code} : 100;
 		my $date   = "$fday~$lday";
 		my $type   = join(",", @type);
 		my $fscale = join(",", @fscale);

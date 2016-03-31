@@ -48,7 +48,7 @@
 	</script>
 
 	<!-- tablesorter -->
-	<script type="text/javascript" src="[% c.uri_for('/static/js/jquery.tablesorter.min.js') %]"></script>
+	<script type="text/javascript" src="[% c.uri_for('/static/js/jquery.tablesorter.js') %]"></script>
 
 	[%- IF highcharts -%]
 	<!-- highcharts -->

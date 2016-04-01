@@ -19,6 +19,16 @@ $(document).ready(function() {
 		  'afterClose':function () {
 		  },
 	  });
+	  $(".fancybox2").fancybox({
+		  type: 'inline',
+		  width: '90%',
+		  height: '100%',
+		  iframe : {
+			  preload: false,
+		  },
+		  'afterClose':function () {
+		  },
+	  });
   });
 </script>
 <form method="post" action="[% c.uri_for(c.action) %]">
@@ -37,12 +47,7 @@ $(document).ready(function() {
 	  <th nowrap>date</th>
 	  <th nowrap>position</th>
 	  <th nowrap>fscale</th>
-	  <th nowrap>damege1</th>
-	  <th nowrap>damege2</th>
 	  <th nowrap>dead</th>
-	  <th nowrap>hurt1</th>
-	  <th nowrap>alldestroy</th>
-	  <th nowrap>halfdestroy</th>
 	  <th nowrap>detail</th>
 	</tr>
   </thead>
@@ -55,17 +60,20 @@ $(document).ready(function() {
 	  <td nowrap>[% l.type %]</td>
 	  <td nowrap>[% l.date %]</td>
 	  <td nowrap>[% l.position %]</td>
-	  <td nowrap>[% l.fscale %]</td>
-	  <td nowrap>[% l.damege1 %]</td>
-	  <td nowrap>[% l.damege2 %]</td>
+	  <td nowrap>
+		<a class="fancybox2" href="#inline">[% l.fscale %]</a>
+	  </td>
 	  <td nowrap>[% l.dead %]</td>
-	  <td nowrap>[% l.hurt1 %]</td>
-	  <td nowrap>[% l.alldestroy %]</td>
-	  <td nowrap>[% l.halfdestroy %]</td>
 	  <td nowrap>[% l.detail %]</td>
+	  <td><div hidden id="inline">
+	      <p>
+		負傷者:[% l.hurt1 %]<br>
+		全壊:[% l.alldestroy %]<br>
+		半壊:[% l.halfdestroy %]
+	      </p>
+	  </div></td>
 	</tr>
 	[%- END %]
   </tbody>
 </table>
-
 [%- END # WRAPPER %]
